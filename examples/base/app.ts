@@ -70,24 +70,26 @@ import axios from '../../src/index'
 //   }
 // })
 
-// axios({
-//   method: 'post',
-//   url: '/base/post',
-//   headers: {
-//     'content-type': 'application/json',
-//     'Accept': 'application/json, text/plain, */*'
-//   },
-//   data: {
-//     a: 1,
-//     b: 2
-//   }
-// })
+axios({
+  method: 'post',
+  url: '/base/post',
+  headers: {
+    'content-type': 'application/json',
+    'Accept': 'application/json, text/plain, */*'
+  },
+  timeout: 1000,
+  data: {
+    a: 1,
+    b: 2
+  }
+})
 
 
 
 axios({
   method: 'post',
   url: '/base/post',
+  timeout: 1000,
   data: {
     a:1,
     b:2
