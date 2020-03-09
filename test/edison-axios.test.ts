@@ -1,4 +1,4 @@
-import DummyClass from "../src/edison-axios"
+import DummyClass from "../src/genal-axios"
 
 /**
  * Dummy test

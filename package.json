@@ -1,11 +1,11 @@
 {
-  "name": "edison-axios",
+  "name": "genal-axios",
   "version": "0.0.0",
   "description": "",
   "keywords": [],
-  "main": "dist/edison-axios.umd.js",
-  "module": "dist/edison-axios.es5.js",
-  "typings": "dist/types/edison-axios.d.ts",
+  "main": "dist/genal-axios.umd.js",
+  "module": "dist/genal-axios.es5.js",
+  "typings": "dist/types/genal-axios.d.ts",
   "files": [
     "dist"
   ],
