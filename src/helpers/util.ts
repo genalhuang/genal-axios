@@ -40,5 +40,4 @@ export function deepMerge(...objs: any[]): any {
   return result
 }
 
-console.log(deepMerge({a:{c:1},b:{d:1}},{a:{c:2}}))
 
