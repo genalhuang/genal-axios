@@ -1,3 +1,5 @@
+import { rename } from 'fs'
+
 export type Method =
   | 'get'
   | 'GET'
@@ -26,7 +28,10 @@ export interface AxiosRequestConfig {
   transformResponse?: AxiosTransformer | AxiosTransformer[]
   cancelToken?: CancelToken
   withCredentials?: boolean
-
+  xsrfCookieName?: string
+  xsrfHeaderName?: string
+  onDownloadProgress?:(e: ProgressEvent) => void
+  onUploadProgress?:(e: ProgressEvent) => void
   [propName: string]: any
 }
 

@@ -1,13 +1,13 @@
 import {
-  AxiosPromise,
   AxiosRequestConfig,
+  AxiosPromise,
   AxiosResponse,
   Method,
-  RejectedFn,
-  ResolvedFn
+  ResolvedFn,
+  RejectedFn
 } from '../types'
-import dispathRequest from './dispathRequest'
-import InterceptorManager from './interceptorManager'
+import dispatchRequest, { transformURL } from './dispatchRequest'
+import InterceptorManager from './InterceptorManager'
 import mergeConfig from './mergeConfig'
 
 interface Interceptors {
@@ -16,7 +16,7 @@ interface Interceptors {
 }
 
 interface PromiseChain<T> {
-  resolved: ResolvedFn<T> | ((config: AxiosRequestConfig) => AxiosResponse)
+  resolved: ResolvedFn<T> | ((config: AxiosRequestConfig) => AxiosPromise)
   rejected?: RejectedFn
 }
 
@@ -32,7 +32,7 @@ export default class Axios {
     }
   }
 
-  request(url?: any, config?: any): AxiosPromise {
+  request(url: any, config?: any): AxiosPromise {
     if (typeof url === 'string') {
       if (!config) {
         config = {}
@@ -42,25 +42,28 @@ export default class Axios {
       config = url
     }
 
-    // 配置合并策略
     config = mergeConfig(this.defaults, config)
+    config.method = config.method.toLowerCase()
 
-    // 拦截器链
-    const chain: PromiseChain<any>[] = [{
-      resolved: dispathRequest,
-      rejected: undefined
-    }]
+    const chain: PromiseChain<any>[] = [
+      {
+        resolved: dispatchRequest,
+        rejected: undefined
+      }
+    ]
 
     this.interceptors.request.forEach(interceptor => {
       chain.unshift(interceptor)
     })
+
     this.interceptors.response.forEach(interceptor => {
       chain.push(interceptor)
     })
+
     let promise = Promise.resolve(config)
 
     while (chain.length) {
-      const { resolved, rejected } = chain.shift()
+      const { resolved, rejected } = chain.shift()!
       promise = promise.then(resolved, rejected)
     }
 
@@ -95,7 +98,16 @@ export default class Axios {
     return this._requestMethodWithData('patch', url, data, config)
   }
 
-  _requestMethodWithoutData(method: Method, url: string, config: AxiosRequestConfig): AxiosPromise {
+  getUri(config?: AxiosRequestConfig): string {
+    config = mergeConfig(this.defaults, config)
+    return transformURL(config)
+  }
+
+  _requestMethodWithoutData(
+    method: Method,
+    url: string,
+    config?: AxiosRequestConfig
+  ): AxiosPromise {
     return this.request(
       Object.assign(config || {}, {
         method,

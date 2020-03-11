@@ -20,14 +20,12 @@ export default function dispatchRequest(config: AxiosRequestConfig): AxiosPromis
   )
 }
 
-// 处理url
 function processConfig(config: AxiosRequestConfig): void {
   config.url = transformURL(config)
   config.data = transform(config.data, config.headers, config.transformRequest)
   config.headers = flattenHeaders(config.headers, config.method!)
 }
 
-// 处理url
 export function transformURL(config: AxiosRequestConfig): string {
   let { url, params, paramsSerializer, baseURL } = config
   if (baseURL && !isAbsoluteURL(url!)) {
@@ -36,7 +34,6 @@ export function transformURL(config: AxiosRequestConfig): string {
   return buildURL(url!, params, paramsSerializer)
 }
 
-// 处理返回数据
 function transformResponseData(res: AxiosResponse): AxiosResponse {
   res.data = transform(res.data, res.headers, res.config.transformResponse)
   return res

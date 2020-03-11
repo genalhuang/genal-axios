@@ -9,3 +9,4 @@ export default class Cancel {
 export function isCancel(value: any): boolean {
   return value instanceof Cancel
 }
+
