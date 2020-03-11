@@ -1,4 +1,4 @@
-import axios, { AxiosError } from '../../src/index'
+import axios from '../../src/index'
 // import qs from 'qs'
 
 import 'nprogress/nprogress.css'
@@ -27,7 +27,7 @@ import NProgress from 'nprogress'
 const instance = axios.create()
 
 function calculatePercentage(loaded: number, total: number) {
-  return Math.floor(loaded * 1.0) / total
+  return Math.floor(loaded) / total
 }
 
 function loadProgressBar() {
@@ -66,13 +66,13 @@ loadProgressBar()
 
 const downloadEl = document.getElementById('download')
 
-downloadEl!.addEventListener('click', e => {
+downloadEl!.addEventListener('click', () => {
   instance.get('https://img.mukewang.com/5cc01a7b0001a33718720632.jpg')
 })
 
 const uploadEl = document.getElementById('upload')
 
-uploadEl!.addEventListener('click', e => {
+uploadEl!.addEventListener('click', () => {
   const data = new FormData()
   const fileEl = document.getElementById('file') as HTMLInputElement
   if (fileEl.files) {
@@ -82,16 +82,16 @@ uploadEl!.addEventListener('click', e => {
   }
 })
 
-// axios.post('/more/post', {
-//   a: 1
-// }, {
-//   auth: {
-//     username: 'Yee',
-//     password: '123456'
-//   }
-// }).then(res => {
-//   console.log(res)
-// })
+axios.post('/more/post', {
+  a: 1
+}, {
+  auth: {
+    username: 'genal',
+    password: '123456'
+  }
+}).then(res => {
+  console.log(res)
+})
 
 
 // axios.get('/more/304').then(res => {
