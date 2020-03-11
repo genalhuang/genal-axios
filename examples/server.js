@@ -90,6 +90,14 @@ function registerRouter() {
   router.post('/extend/post', function(req, res) {
     res.json(req.body)
   })
+
+  router.get('/cancel/get', function(req, res) {
+    res.end("hello genaller")
+  })
+
+  router.post('/cancel/post', function(req, res) {
+    res.json(req.body)
+  })
 }
 
 function registerInterceptorRouter() {
