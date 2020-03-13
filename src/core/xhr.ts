@@ -10,8 +10,8 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
     const {
       data = null,
       url,
-      method = 'get',
-      headers,
+      method,
+      headers = {},
       responseType,
       timeout,
       cancelToken,
@@ -23,28 +23,22 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       auth,
       validateStatus
     } = config
-    // 创建request实例
+
     const request = new XMLHttpRequest()
 
-    // 初始化
-    request.open(method.toUpperCase(), url, true)
+    request.open(method!.toUpperCase(), url!, true)
 
-    // 配置request对象
-    configRequest()
+    configureRequest()
 
-    // 添加事件处理函数
     addEvents()
 
-    // 处理请求头
     processHeaders()
 
-    // 处理请求取消
     processCancel()
 
-    // 发送请求
     request.send(data)
 
-    function configRequest(): void {
+    function configureRequest(): void {
       if (responseType) {
         request.responseType = responseType
       }
@@ -63,55 +57,60 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
         if (request.readyState !== 4) {
           return
         }
-        const responseHeaders = request.getAllResponseHeaders()
-        const responseData = responseType !== 'text' ? request.response : request.responseText
+
+        if (request.status === 0) {
+          return
+        }
+
+        const responseHeaders = parseHeaders(request.getAllResponseHeaders())
+        const responseData =
+          responseType && responseType !== 'text' ? request.response : request.responseText
         const response: AxiosResponse = {
           data: responseData,
           status: request.status,
           statusText: request.statusText,
-          headers: parseHeaders(responseHeaders),
+          headers: responseHeaders,
           config,
           request
         }
         handleResponse(response)
       }
 
-      // 处理错误
       request.onerror = function handleError() {
-        reject(createError('Henderson NetWork Error', config, null, request))
+        reject(createError('Network Error', config, null, request))
       }
 
-      // 处理超时
       request.ontimeout = function handleTimeout() {
-        reject(createError(`Timeout of ${timeout} ms exceeded`, config, 'ECONNABORTED', request))
+        reject(
+          createError(`Timeout of ${config.timeout} ms exceeded`, config, 'ECONNABORTED', request)
+        )
       }
 
-      if(onDownloadProgress) {
+      if (onDownloadProgress) {
         request.onprogress = onDownloadProgress
       }
 
-      if(onUploadProgress) {
+      if (onUploadProgress) {
         request.upload.onprogress = onUploadProgress
       }
     }
 
     function processHeaders(): void {
-      if(isFormData(data)) {
+      if (isFormData(data)) {
         delete headers['Content-Type']
       }
 
-      if ((withCredentials || isURLSameOrigin(url)) && xsrfCookieName) {
+      if ((withCredentials || isURLSameOrigin(url!)) && xsrfCookieName) {
         const xsrfValue = cookie.read(xsrfCookieName)
-        if (xsrfValue) {
+        if (xsrfValue && xsrfHeaderName) {
           headers[xsrfHeaderName] = xsrfValue
         }
       }
 
-      if(auth) {
-        headers['Authorization'] = 'Basic ' + btoa(auth.username+ ':' + auth.password)
+      if (auth) {
+        headers['Authorization'] = 'Basic ' + btoa(auth.username + ':' + auth.password)
       }
 
-      // 设置请求头
       Object.keys(headers).forEach(name => {
         if (data === null && name.toLowerCase() === 'content-type') {
           delete headers[name]
@@ -123,10 +122,17 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
 
     function processCancel(): void {
       if (cancelToken) {
-        cancelToken.promise.then(reason => {
-          request.abort()
-          reject(reason)
-        })
+        cancelToken.promise
+          .then(reason => {
+            request.abort()
+            reject(reason)
+          })
+          .catch(
+            /* istanbul ignore next */
+            () => {
+              // do nothing
+            }
+          )
       }
     }
 
@@ -136,10 +142,11 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       } else {
         reject(
           createError(
-            `Henderson Request failed with status code ${response.status}`,
+            `Request failed with status code ${response.status}`,
             config,
             null,
-            request
+            request,
+            response
           )
         )
       }
