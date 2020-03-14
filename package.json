@@ -1,6 +1,6 @@
 {
   "name": "genal-axios",
-  "version": "0.1.5",
+  "version": "1.0.0",
   "description": "",
   "keywords": [],
   "main": "dist/axios.umd.js",
