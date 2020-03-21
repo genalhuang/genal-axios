@@ -1,4 +1,4 @@
-# genal
+# genal-axios
 
 ## Project setup
 ```
