@@ -1,9 +1,9 @@
 {
   "name": "genal-axios",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "",
   "keywords": [],
-  "main": "dist/axios.umd.js",
+  "main": "dist/lib/index.js",
   "module": "dist/axios.es5.js",
   "typings": "dist/types/index.d.ts",
   "files": [
